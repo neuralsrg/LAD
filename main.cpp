@@ -4,15 +4,32 @@
 
 int main()
 {
-    // long N = 10000;
-    // int num = 0b110;
-    // boost::dynamic_bitset <uint8_t> B (N, num);
-    // std::cout << B << std::endl;
-    VectorGenerator generator(0.7);
-    auto v = generator(100);
+    try {
+        boost::dynamic_bitset<uint8_t> A (10, 0);
 
-    Matrix mtr(10, 10, v);
-    std::cout << mtr << std::endl;
+        VectorGenerator generator(0.3);
+        auto v = generator(1500);
+        /*
+        v = {1, 0, 0, 0, 0,
+             0, 1, 0, 0, 0,
+             0, 0, 1, 0, 0,
+             0, 0, 0, 0, 1,
+             0, 0, 0, 1, 0};
+        */
+        Matrix mtr(50, 30, v);
 
-    return 0;
+        //boost::dynamic_bitset<uint8_t> cover (5, 5);
+        
+        std::cout << "Matrix:" << std::endl;
+        std::cout << mtr << std::endl;
+
+        //std::cout << std::boolalpha << mtr.check_cols(cover) << std::endl;
+        mtr.mine_covers();
+        mtr.print_covers();
+
+        return 0;
+    }
+    catch (char const* exc) {
+        std::cout << "Exception: " << exc << std::endl;
+    }
 }
