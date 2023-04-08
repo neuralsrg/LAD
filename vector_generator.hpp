@@ -18,8 +18,8 @@ class VectorGenerator
     public:
 
     VectorGenerator(float prob);
-    std::shared_ptr<std::vector<uint8_t>> operator()(size_t length);
-    static void print_vector(std::shared_ptr<std::vector<u_int8_t>>);
+    std::vector<uint8_t> operator()(size_t length);
+    static void print_vector(const std::vector<u_int8_t>&);
 };
 
 #endif
