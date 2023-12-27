@@ -2,6 +2,7 @@
 #define BASESOLVER_HPP
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -22,12 +23,11 @@ class BaseSolver
 private:
     void parseCsv(string filename);
     void buildColMat();
-    void readHeader(string headerfile);
 protected:
     TMatrix mat;
     vector<int> header;
 public:
-    BaseSolver(string filename, string headerfile);
+    BaseSolver(string filename);
     virtual ~BaseSolver() {};
     void printMatrix();
     virtual dynamic_bitset<unsigned char> solve() = 0;

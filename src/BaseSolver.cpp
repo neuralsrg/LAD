@@ -2,11 +2,10 @@
 
 /* Constructor */
 
-BaseSolver::BaseSolver(string filename, string headerfile) : mat(), header(0)
+BaseSolver::BaseSolver(string filename) : mat(), header(0)
 {
     parseCsv(filename);
     buildColMat();
-    readHeader(headerfile);
 }
 
 /* Private members */
@@ -15,14 +14,22 @@ void BaseSolver::parseCsv(string filename)
 {
     string row;
     ifstream boolfile;
+    int number, i = 0;
 
     /* Openning file containing boolean matrix */
     boolfile.open(filename);
     while(getline(boolfile, row))
     {
-        row.erase(remove(row.begin(), row.end(), ','), row.end());
-        reverse(row.begin(), row.end()); // bitset[0] -> first column
-        mat.row_mat.push_back(dynamic_bitset<unsigned char>(row));
+        if (i++ == 0) {
+            replace(row.begin(), row.end(), ',', ' ');
+            stringstream ss(row);
+            while (ss >> number)
+                header.push_back(number);
+        } else {
+            row.erase(remove(row.begin(), row.end(), ','), row.end());
+            reverse(row.begin(), row.end()); // bitset[0] -> first column
+            mat.row_mat.push_back(dynamic_bitset<unsigned char>(row));
+        }
     }
     boolfile.close();
 }
@@ -35,18 +42,6 @@ void BaseSolver::buildColMat()
             mat.col_mat[j][i] = mat.row_mat[i][j];
         }
     }
-}
-
-void BaseSolver::readHeader(string headerfile)
-{
-    std::ifstream header_file;
-    string token;
-
-    header_file.open(headerfile);
-    while (getline(header_file, token, ',')) {
-        header.push_back(stoi(token));
-    }
-    header_file.close();
 }
 
 /* Public members */
@@ -73,6 +68,7 @@ void BaseSolver::printMatrix()
     for (size_t i = 0; i < header.size(); ++i) {
         cout << header[i] << " \n"[i == header.size() - 1];
     }
+    cout << endl;
 }
 
 string BaseSolver::coverage2String(const dynamic_bitset<unsigned char>& coverage)
