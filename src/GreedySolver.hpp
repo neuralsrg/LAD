@@ -10,7 +10,7 @@ class GreedySolver : public BaseSolver
 private:
     void addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsigned char>& coverage, set<int>& uncovered_rows, int newFeature);
 public:
-    GreedySolver(string filename, string headerfile);
+    GreedySolver(string filename);
     virtual ~GreedySolver() {};
     virtual dynamic_bitset<unsigned char> solve() override;
 };

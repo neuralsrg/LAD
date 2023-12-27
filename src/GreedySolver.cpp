@@ -30,14 +30,14 @@ void GreedySolver::addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsig
 
 /* Public members */
 
-GreedySolver::GreedySolver(string filename, string headerfile) : BaseSolver(filename, headerfile) { }
+GreedySolver::GreedySolver(string filename) : BaseSolver(filename) { }
 
 dynamic_bitset<unsigned char> GreedySolver::solve()
 {
     vector<int> covers_uncovered(header.size(), 0);
     dynamic_bitset<unsigned char> coverage(header.size(), 0);
     set<int> uncovered_rows(counting_iterator<int>(0), counting_iterator<int>(mat.row_mat.size()));
-    set<int> uncovered_features(counting_iterator<int>(0), counting_iterator<int>(header.back()));
+    set<int> uncovered_features(counting_iterator<int>(0), counting_iterator<int>(header.back() + 1));
 
     for (size_t j = 0; j < header.size(); ++j) {
         covers_uncovered[j] = mat.col_mat[j].count();
@@ -75,7 +75,7 @@ dynamic_bitset<unsigned char> GreedySolver::solve()
 
 int main()
 {
-    GreedySolver solver("../csv/test_csv.csv", "../csv/header.csv");
+    GreedySolver solver("../csv/test_csv.csv");
     solver.printMatrix();
     dynamic_bitset<unsigned char> coverage = solver.solve();
 
