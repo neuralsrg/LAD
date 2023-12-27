@@ -1,3 +1,6 @@
+#ifndef BASESOLVER_HPP
+#define BASESOLVER_HPP
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -25,5 +28,10 @@ protected:
     vector<int> header;
 public:
     BaseSolver(string filename, string headerfile);
+    virtual ~BaseSolver() {};
     void printMatrix();
+    virtual dynamic_bitset<unsigned char> solve() = 0;
+    string coverage2String(const dynamic_bitset<unsigned char>& coverage);
 };
+
+#endif

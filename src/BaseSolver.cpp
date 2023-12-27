@@ -75,10 +75,14 @@ void BaseSolver::printMatrix()
     }
 }
 
-
-int main()
+string BaseSolver::coverage2String(const dynamic_bitset<unsigned char>& coverage)
 {
-    BaseSolver solver("../csv/test_csv.csv", "../csv/header.csv");
-    solver.printMatrix();
-    return 0;
+    string str;
+    size_t j = coverage.find_first();
+    if (j == coverage.npos) return str;
+    str += to_string(j);
+    while ((j = coverage.find_next(j)) != coverage.npos) {
+        str += "," + to_string(j);
+    }
+    return str;
 }
