@@ -8,7 +8,7 @@ int main()
         boost::dynamic_bitset<uint8_t> A (10, 0);
 
         VectorGenerator generator(0.3);
-        auto v = generator(1500);
+        auto v = generator(1000);
         /*
         v = {1, 0, 0, 0, 0,
              0, 1, 0, 0, 0,
@@ -16,7 +16,7 @@ int main()
              0, 0, 0, 0, 1,
              0, 0, 0, 1, 0};
         */
-        Matrix mtr(50, 30, v);
+        Matrix mtr(50, 20, v);
 
         //boost::dynamic_bitset<uint8_t> cover (5, 5);
         
