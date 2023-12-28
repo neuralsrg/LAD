@@ -26,6 +26,7 @@ private:
 protected:
     TMatrix mat;
     vector<int> header;
+    bool checkCoverage(const dynamic_bitset<unsigned char>& coverage) const;
 public:
     BaseSolver(string filename);
     virtual ~BaseSolver() {};

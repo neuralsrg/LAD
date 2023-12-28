@@ -44,6 +44,25 @@ void BaseSolver::buildColMat()
     }
 }
 
+/* Protected members */
+
+bool BaseSolver::checkCoverage(const dynamic_bitset<unsigned char>& coverage) const
+{
+    // string coverage_string;
+    // boost::to_string(coverage, coverage_string);
+    // reverse(coverage_string.begin(), coverage_string.end());
+    // dynamic_bitset<unsigned char> reversed_coverage(coverage_string);
+    // int i = 0;
+    for (const auto& row : mat.row_mat) {
+        // i++;
+        if ((row & coverage).count() == 0) {
+            // cout << "Cannot because of row " << i << endl;
+            return false;
+        } 
+    }
+    return true;
+}
+
 /* Public members */
 
 void BaseSolver::printMatrix()
