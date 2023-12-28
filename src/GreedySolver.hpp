@@ -9,6 +9,7 @@ class GreedySolver : public BaseSolver
 {
 private:
     void addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsigned char>& coverage, set<int>& uncovered_rows, int newFeature);
+    void reduceCoverage(dynamic_bitset<unsigned char>& coverage);
 public:
     GreedySolver(string filename);
     virtual ~GreedySolver() {};

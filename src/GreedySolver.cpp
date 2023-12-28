@@ -28,6 +28,29 @@ void GreedySolver::addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsig
     coverage.set(newColumn);
 }
 
+void GreedySolver::reduceCoverage(dynamic_bitset<unsigned char>& coverage)
+{
+    vector<int> count_features(header.back() + 1, 0);
+    size_t j = coverage.find_first();
+    do {
+        count_features[header[j]]++;
+    }
+    while ((j = coverage.find_next(j)) != coverage.npos);
+
+    j = coverage.find_first();
+    do {
+        if (count_features[header[j]] <= 1) continue;
+        coverage.reset(j);
+        cout << "Trying to kick column " << j << endl;
+        if (checkCoverage(coverage)) {
+            count_features[header[j]]--;
+        } else {
+            coverage.set(j);
+        }
+    }
+    while ((j = coverage.find_next(j)) != coverage.npos);
+}
+
 /* Public members */
 
 GreedySolver::GreedySolver(string filename) : BaseSolver(filename) { }
@@ -69,14 +92,14 @@ dynamic_bitset<unsigned char> GreedySolver::solve()
             }
         }
     }
+    reduceCoverage(coverage);
     return coverage;
 }
 
 
 int main()
 {
-    GreedySolver solver("../csv/test_csv.csv");
-    solver.printMatrix();
+    GreedySolver solver("../csv/bool_matrix.csv");
     dynamic_bitset<unsigned char> coverage = solver.solve();
 
     cout << "Coverage " << solver.coverage2String(coverage) << endl;
