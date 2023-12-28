@@ -1,6 +1,7 @@
 .vscode
 *.csv
 *.txt
+*.o
 
 fig
 logs
