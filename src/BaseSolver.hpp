@@ -14,8 +14,8 @@ using namespace boost;
 
 struct TMatrix
 {
-    vector<dynamic_bitset<uint8_t>> row_mat;
-    vector<dynamic_bitset<uint8_t>> col_mat;
+    vector<dynamic_bitset<unsigned char>> row_mat;
+    vector<dynamic_bitset<unsigned char>> col_mat;
 };
 
 class BaseSolver

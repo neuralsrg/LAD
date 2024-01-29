@@ -1,8 +1,4 @@
-#include <chrono>
-
 #include "GreedySolver.hpp"
-
-using namespace std::chrono;
 
 /* Private members */
 
@@ -97,23 +93,4 @@ dynamic_bitset<unsigned char> GreedySolver::solve()
     }
     reduceCoverage(coverage);
     return coverage;
-}
-
-
-int main()
-{
-    GreedySolver solver("../csv/bool_matrix.csv");
-
-    auto start = high_resolution_clock::now();
-
-    dynamic_bitset<unsigned char> coverage = solver.solve();
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-
-    cout << "Coverage " << solver.coverage2String(coverage) << endl;
-
-    cout << "Working time " << duration.count() << " ms" << endl;
-    
-    return 0;
 }
