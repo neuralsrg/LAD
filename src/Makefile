@@ -1,7 +1,10 @@
 all: target.o
 
-target.o: greedysolver.o basesolver.o
-	g++ -std=c++17 -g -Wall -O3 greedysolver.o basesolver.o -o target.o
+target.o: greedymodification.o greedysolver.o basesolver.o
+	g++ -std=c++17 -g -Wall -O3 greedymodification.o greedysolver.o basesolver.o -o target.o
+
+greedymodification.o: greedysolver.o GreedyModification.hpp GreedyModification.cpp
+	g++ -std=c++17 -g -Wall -O3 -c GreedyModification.cpp -o greedymodification.o
 
 greedysolver.o: basesolver.o GreedySolver.hpp GreedySolver.cpp
 	g++ -std=c++17 -g -Wall -O3 -c GreedySolver.cpp -o greedysolver.o
@@ -11,7 +14,7 @@ basesolver.o: BaseSolver.hpp BaseSolver.cpp
 
 
 
-# some old useless
+# old
 
 # all: output.o
 
