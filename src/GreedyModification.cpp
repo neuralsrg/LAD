@@ -24,6 +24,7 @@ map<int, size_t> GreedyModification::getNumIntervals(const dynamic_bitset<unsign
 
 bool GreedyModification::gain(const vector<int>& exclude, int include, const dynamic_bitset<unsigned char>& coverage, map<int, size_t>& intervals) const
 {
+    if ((exclude.size() == 1) && (header[exclude[0]] == header[include])) return false;
     int i = header[include], e = header[exclude[0]];
     if (intervals[e] - exclude.size() >= intervals[i] + 1) {
         intervals[e] -= exclude.size();
@@ -33,10 +34,9 @@ bool GreedyModification::gain(const vector<int>& exclude, int include, const dyn
     return false;
 }
 
-// CHANGE TO VECTOR<SIZE_T>
-dynamic_bitset<unsigned char> GreedyModification::getLargestGroup(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals) const
+vector<size_t> GreedyModification::getLargestGroup(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals) const
 {
-    dynamic_bitset<unsigned char> group(header.size(), 0);
+    vector<size_t> group;
     int j = 0;
     size_t freq = 0, curCol = coverage.find_first();
     for (const auto& p : intervals) {
@@ -47,32 +47,31 @@ dynamic_bitset<unsigned char> GreedyModification::getLargestGroup(const dynamic_
     }
     do {
         if (header[curCol] == j) {
-            group.set(curCol);
+            group.push_back(curCol);
         }
         curCol = coverage.find_next(curCol);
     } while (header[curCol] <= j);
     return group;
 }
 
-void GreedyModification::removeHeaviestCol(dynamic_bitset<unsigned char>& group, map<int, vector<size_t>> supportRows) const
+void GreedyModification::removeHeaviestCol(vector<size_t>& group, map<size_t, vector<size_t>> supportRows) const
 {
-    size_t freq = 0, curCol = group.find_first(), j = 0;
-    do {
+    size_t freq = 0, j = 0;
+    for (size_t i = 0; i < group.size(); ++i) {
+        size_t curCol = group[i];
         if (supportRows[curCol].size() > freq) {
-            j = curCol;
+            j = i;
             freq = supportRows[curCol].size();
         }
-        curCol = group.find_next(curCol);
-    } while (curCol != group.npos);
-    group.reset(j);
+    }
+    group.erase(group.begin() + j);
 }
 
-vector<size_t> GreedyModification::getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<int, vector<size_t>> supportRows) const
+vector<size_t> GreedyModification::getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<size_t, vector<size_t>> supportRows) const
 {
-    vector<size_t> cols;
-    dynamic_bitset<unsigned char> group = getLargestGroup(coverage, intervals);
-    size_t min_support = mat.row_mat.size(), j = group.find_first();
-    do {
+    vector<size_t> cols, group = getLargestGroup(coverage, intervals);
+    size_t min_support = mat.row_mat.size();
+    for (const auto& j : group) {
         if (min_support > supportRows[j].size()) {
             min_support = supportRows[j].size();
             cols.clear();
@@ -80,14 +79,13 @@ vector<size_t> GreedyModification::getLightestCols(const dynamic_bitset<unsigned
         if (min_support == supportRows[j].size()) {
             cols.push_back(j);
         }
-        j = group.find_next(j);
-    } while (j != group.npos);
+    }
     return cols;
 }
 
-map<int, vector<size_t>> GreedyModification::getSupportRows(const dynamic_bitset<unsigned char>& coverage) const
+map<size_t, vector<size_t>> GreedyModification::getSupportRows(const dynamic_bitset<unsigned char>& coverage) const
 {
-    map<int, vector<size_t>> dict;
+    map<size_t, vector<size_t>> dict;
     for (size_t i = 0; i < mat.row_mat.size(); ++i) {
         if ((mat.row_mat[i] & coverage).count() != 1) {
             continue;
@@ -102,15 +100,16 @@ map<int, vector<size_t>> GreedyModification::getSupportRows(const dynamic_bitset
     return dict;
 }
 
-vector<size_t> GreedyModification::getCoveringCols(const vector<size_t>& cols, const map<int, vector<size_t>>& supportRows) const
+vector<size_t> GreedyModification::getCoveringCols(const vector<size_t>& cols, const map<size_t, vector<size_t>>& supportRows) const
 {
     dynamic_bitset<unsigned char> testRow(mat.col_mat.size(), 0);
     testRow.set();
-    for (const auto& p : supportRows) {
-        for (const auto& r : p.second) {
+    for (const auto& p : cols) {
+        for (const auto& r : supportRows.at(p)) {
             testRow &= mat.row_mat[r];
         }
     }
+    cout << "Num covering cols: " << testRow.count() << endl;
     if (testRow.none()) return {};
     vector<size_t> coveringCols;
     size_t j = testRow.find_first();
@@ -129,24 +128,39 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 {
     dynamic_bitset<unsigned char> coverage = GreedySolver::solve();
     map<int, size_t> intervals = getNumIntervals(coverage);
-    map<int, vector<size_t>> supportRows = getSupportRows(coverage);
+    map<size_t, vector<size_t>> supportRows = getSupportRows(coverage);
 
-    cout << "Support rows:" << endl;
-    for (const auto& r : supportRows) {
-        cout << "Column " << r.first << ": ";
-        for (auto it = r.second.begin(); it != r.second.end(); it++) {
-            cout << *it << ' ';
-        }
-        cout << endl;
-    }
+    // cout << "Support rows:" << endl;
+    // for (const auto& r : supportRows) {
+    //     cout << "Column " << r.first << ": ";
+    //     for (auto it = r.second.begin(); it != r.second.end(); it++) {
+    //         cout << *it << ' ';
+    //     }
+    //     cout << endl;
+    // }
 
     // cout << "Intervals:" << endl;
     // for (auto p : intervals) {
     //     cout << p.first << ": " << p.second << endl;
     // }
 
-    vector<size_t> cols = getLightestCols(coverage, intervals, supportRows);
-    for (auto v : cols) {
+    // cout << "Lightest group" << endl;
+    // vector<size_t> group = getLargestGroup(coverage, intervals);
+    // for (auto v : group) {
+    //     cout << v << ' ';
+    // }
+    // cout << endl;
+
+    // cout << "Lightest columns" << endl;
+    // vector<size_t> cols = getLightestCols(coverage, intervals, supportRows);
+    // for (auto v : cols) {
+    //     cout << v << ' ';
+    // }
+    // cout << endl;
+
+    cout << "Covering Columns" << endl;
+    vector<size_t> coveringCols = getCoveringCols(vector<size_t> {105, 237}, supportRows);
+    for (auto v : coveringCols) {
         cout << v << ' ';
     }
     cout << endl;
@@ -156,7 +170,6 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 
 int main()
 {
-    cout << dynamic_bitset<unsigned char>(5, 0).set() << endl;
     GreedyModification solver("../csv/bool_matrix.csv");
 
     auto start = high_resolution_clock::now();
