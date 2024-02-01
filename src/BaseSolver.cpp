@@ -58,7 +58,7 @@ bool BaseSolver::checkCoverage(const dynamic_bitset<unsigned char>& coverage) co
 
 /* Public members */
 
-void BaseSolver::printMatrix()
+void BaseSolver::printMatrix() const
 {
     string str;
 
@@ -83,7 +83,7 @@ void BaseSolver::printMatrix()
     cout << endl;
 }
 
-string BaseSolver::coverage2String(const dynamic_bitset<unsigned char>& coverage)
+string BaseSolver::coverage2String(const dynamic_bitset<unsigned char>& coverage) const
 {
     string str;
     size_t j = coverage.find_first();
@@ -93,4 +93,21 @@ string BaseSolver::coverage2String(const dynamic_bitset<unsigned char>& coverage
         str += "," + to_string(j);
     }
     return str;
+}
+
+int BaseSolver::maxBins(const dynamic_bitset<unsigned char>& coverage) const
+{
+    int n = 0, max_n = 0, prev = 0;
+    size_t j = coverage.find_first();
+    do {
+        if (prev == header[j]) {
+            ++n;
+        } else {
+            max_n = n > max_n ? n : max_n;
+            n = 1;
+        }
+        prev = header[j];
+        j = coverage.find_next(j);
+    } while (j != coverage.npos);
+    return max_n + 1;
 }

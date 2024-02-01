@@ -30,9 +30,10 @@ protected:
 public:
     BaseSolver(string filename);
     virtual ~BaseSolver() {};
-    void printMatrix();
+    void printMatrix() const;
     virtual dynamic_bitset<unsigned char> solve() = 0;
-    string coverage2String(const dynamic_bitset<unsigned char>& coverage);
+    string coverage2String(const dynamic_bitset<unsigned char>& coverage) const;
+    int maxBins(const dynamic_bitset<unsigned char>& coverage) const;
 };
 
 #endif
