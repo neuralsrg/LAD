@@ -13,9 +13,9 @@ private:
 protected:
     map<int, size_t> getNumIntervals(const dynamic_bitset<unsigned char>& coverage) const;
     bool gain(const vector<size_t>& exclude, size_t include, dynamic_bitset<unsigned char>& coverage, map<int, size_t>& intervals, map<size_t, vector<size_t>>& supportRows) const;
-    vector<size_t> getLargestGroup(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals) const;
+    vector<vector<size_t>> getLargestGroups(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals) const;
     void removeHeaviestCol(vector<size_t>& group, map<size_t, vector<size_t>> supportRows) const;
-    vector<size_t> getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<size_t, vector<size_t>> supportRows) const;
+    vector<vector<size_t>> getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<size_t, vector<size_t>> supportRows) const;
     map<size_t, vector<size_t>> getSupportRows(const dynamic_bitset<unsigned char>& coverage) const;
     vector<size_t> getCoveringCols(const vector<size_t>& cols, const map<size_t, vector<size_t>>& supportRows) const;
 
