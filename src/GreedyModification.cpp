@@ -40,6 +40,7 @@ void GreedyModification::reduceCoverage(dynamic_bitset<unsigned char>& coverage,
             intervals[header[p.first]]--;
         } else {
             /* Remove support rows from column */
+            reverse(removeIds.begin(), removeIds.end());
             for (const auto& i : removeIds) {
                 p.second.erase(p.second.begin() + i);
             }
@@ -193,7 +194,7 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
     map<size_t, vector<size_t>> supportRows = getSupportRows(coverage);
     cout << "Support rows:" << endl;
     for (const auto& r : supportRows) {
-        cout << "Column " << r.first << ": ";
+        cout << '[' << header[r.first] << ']' << " Column " << r.first << ": ";
         for (auto it = r.second.begin(); it != r.second.end(); it++) {
             cout << *it << ' ';
         }
@@ -249,10 +250,11 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 
         cout << "\nTrying to remove columns" << endl;
 
-        vector<vector<size_t>> allLightestCols = getLightestCols(coverage, intervals, supportRows);
-        for (const auto& lightestCols : allLightestCols) {
-            print("\nWill try to remove one of", lightestCols);
-            for (const auto& exclude : lightestCols) {
+        // vector<vector<size_t>> allLightestCols = getLightestCols(coverage, intervals, supportRows);
+        groups = getLargestGroups(coverage, intervals);
+        for (const auto& group : groups) {
+            print("\nWill try to remove one of", group);
+            for (const auto& exclude : group) {
                 cout << "Processing " << exclude << " column" << endl;
                 vector<size_t> coveringCols = getCoveringCols({exclude}, supportRows);
                 print("It can be replaced with one of", coveringCols);
