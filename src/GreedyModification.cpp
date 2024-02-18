@@ -1,8 +1,4 @@
-#include <chrono>
-
 #include "GreedyModification.hpp"
-
-using namespace std::chrono;
 
 /* Private members */
 
@@ -55,7 +51,7 @@ bool GreedyModification::gain(const vector<size_t>& exclude, size_t include, dyn
     if ((exclude.size() == 1) && (header[exclude[0]] == header[include])) return false;
     int i = header[include], e = header[exclude[0]];
     if (intervals[e] > intervals[i] + 1) {
-        cout << "GAIN: intervals[e] = " << intervals[e] << "; intervals[i] = " << intervals[i] << endl;
+        // cout << "GAIN: intervals[e] = " << intervals[e] << "; intervals[i] = " << intervals[i] << endl;
         /* Update Intervals */
         intervals[e] -= exclude.size();
         intervals[i]++;
@@ -106,7 +102,7 @@ vector<vector<size_t>> GreedyModification::getLargestGroups(const dynamic_bitset
                 group.push_back(curCol);
             }
             curCol = coverage.find_next(curCol);
-        } while (header[curCol] <= j);
+        } while (header[curCol] <= j && curCol != coverage.npos);
         groups.push_back(group);
     }
     return groups;
@@ -125,27 +121,27 @@ void GreedyModification::removeHeaviestCol(vector<size_t>& group, map<size_t, ve
     group.erase(group.begin() + j);
 }
 
-vector<vector<size_t>> GreedyModification::getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<size_t, vector<size_t>> supportRows) const
-{
-    vector<vector<size_t>> cols;
-    vector<vector<size_t>> groups = getLargestGroups(coverage, intervals);
+// vector<vector<size_t>> GreedyModification::getLightestCols(const dynamic_bitset<unsigned char>& coverage, const map<int, size_t>& intervals, map<size_t, vector<size_t>> supportRows) const
+// {
+//     vector<vector<size_t>> cols;
+//     vector<vector<size_t>> groups = getLargestGroups(coverage, intervals);
 
-    for (const auto& group : groups) {
-        size_t min_support = mat.row_mat.size();
-        vector<size_t> col;
-        for (const auto& j : group) {
-            if (min_support > supportRows[j].size()) {
-                min_support = supportRows[j].size();
-                col.clear();
-            }
-            if (min_support == supportRows[j].size()) {
-                col.push_back(j);
-            }
-        }
-        cols.push_back(col);
-    }
-    return cols;
-}
+//     for (const auto& group : groups) {
+//         size_t min_support = mat.row_mat.size();
+//         vector<size_t> col;
+//         for (const auto& j : group) {
+//             if (min_support > supportRows[j].size()) {
+//                 min_support = supportRows[j].size();
+//                 col.clear();
+//             }
+//             if (min_support == supportRows[j].size()) {
+//                 col.push_back(j);
+//             }
+//         }
+//         cols.push_back(col);
+//     }
+//     return cols;
+// }
 
 map<size_t, vector<size_t>> GreedyModification::getSupportRows(const dynamic_bitset<unsigned char>& coverage) const
 {
@@ -192,14 +188,14 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 {
     dynamic_bitset<unsigned char> coverage = GreedySolver::solve();
     map<size_t, vector<size_t>> supportRows = getSupportRows(coverage);
-    cout << "Support rows:" << endl;
-    for (const auto& r : supportRows) {
-        cout << '[' << header[r.first] << ']' << " Column " << r.first << ": ";
-        for (auto it = r.second.begin(); it != r.second.end(); it++) {
-            cout << *it << ' ';
-        }
-        cout << endl;
-    }
+    // cout << "Support rows:" << endl;
+    // for (const auto& r : supportRows) {
+    //     cout << '[' << header[r.first] << ']' << " Column " << r.first << ": ";
+    //     for (auto it = r.second.begin(); it != r.second.end(); it++) {
+    //         cout << *it << ' ';
+    //     }
+    //     cout << endl;
+    // }
 
     map<int, size_t> intervals = getNumIntervals(coverage);
     // cout << "Intervals:" << endl;
@@ -218,29 +214,29 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 
     bool modified = true;
     while (modified) {
-        cout << "\nCurrent coverage: " << coverage2String(coverage) << '\n' << endl;
+        // cout << "\nCurrent coverage: " << coverage2String(coverage) << '\n' << endl;
         modified = false;
         vector<vector<size_t>> groups = getLargestGroups(coverage, intervals);
 
         /* Trying to remove group */
         for (auto& group : groups) {
             while (group.size() > 0) {
-                print("\nProcessing group:", group);
-                if (group.size() > 0) cout << "Which belongs to feature " << header[group[0]] << endl;
+                // print("\nProcessing group:", group);
+                // if (group.size() > 0) cout << "Which belongs to feature " << header[group[0]] << endl;
                 vector<size_t> coveringCols = getCoveringCols(group, supportRows);
                 sort(coveringCols.begin(), coveringCols.end(), [&](const size_t& a, const size_t& b) { return mat.col_mat[a].count() > mat.col_mat[b].count(); });
-                print("Sorted covering cols:", coveringCols);
+                // print("Sorted covering cols:", coveringCols);
                 for (const auto& include : coveringCols) {
                     if (gain(group, include, coverage, intervals, supportRows)) {
                         modified = true;
-                        cout << "\nUsed " << include << " column to update coverage\n" << endl;
+                        // cout << "\nUsed " << include << " column to update coverage\n" << endl;
                         reduceCoverage(coverage, include, supportRows, intervals);
                         break;
                     }
                 }
                 if (modified) break;
                 removeHeaviestCol(group, supportRows);
-                cout << "Heaviest column removed" << endl;
+                // cout << "Heaviest column removed" << endl;
             }
             if (modified) break;
         }
@@ -248,22 +244,22 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
 
         /* If couldn't remove group */
 
-        cout << "\nTrying to remove columns" << endl;
+        // cout << "\nTrying to remove columns" << endl;
 
         // vector<vector<size_t>> allLightestCols = getLightestCols(coverage, intervals, supportRows);
         groups = getLargestGroups(coverage, intervals);
         for (const auto& group : groups) {
-            print("\nWill try to remove one of", group);
+            // print("\nWill try to remove one of", group);
             for (const auto& exclude : group) {
-                cout << "Processing " << exclude << " column" << endl;
+                // cout << "Processing " << exclude << " column" << endl;
                 vector<size_t> coveringCols = getCoveringCols({exclude}, supportRows);
-                print("It can be replaced with one of", coveringCols);
+                // print("It can be replaced with one of", coveringCols);
                 sort(coveringCols.begin(), coveringCols.end(), [&](const size_t& a, const size_t& b) { return mat.col_mat[a].count() > mat.col_mat[b].count(); });
                 for (const auto& include : coveringCols) {
                     if (gain({exclude}, include, coverage, intervals, supportRows)) {
                         modified = true;
                         reduceCoverage(coverage, include, supportRows, intervals);
-                        cout << "And we replace it with " << include << " column" << endl;
+                        // cout << "And we replace it with " << include << " column" << endl;
                         break;
                     }
                 }
@@ -281,22 +277,4 @@ dynamic_bitset<unsigned char> GreedyModification::solve()
         // }
     }
     return coverage;
-}
-
-int main()
-{
-    GreedyModification solver("../csv/bool_matrix.csv");
-
-    auto start = high_resolution_clock::now();
-
-    dynamic_bitset<unsigned char> coverage = solver.solve();
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-
-    cout << "Coverage " << solver.coverage2String(coverage) << endl;
-    cout << "Working time " << duration.count() << " ms" << endl;
-    cout << "Max number of bins " << solver.maxBins(coverage) << endl;
-
-    return 0;
 }
