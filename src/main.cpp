@@ -1,35 +1,46 @@
 #include <iostream>
-#include "vector_generator.hpp"
-#include "matrix.hpp"
+#include <chrono>
+#include <fstream>
+#include <filesystem>
+
+#include "GreedySolver.hpp"
+#include "GreedyModification.hpp"
+
+using namespace std;
+using namespace std::chrono;
+
 
 int main()
 {
-    try {
-        boost::dynamic_bitset<uint8_t> A (10, 0);
+    filesystem::path matrix_path   = "../csv/bool_matrix.csv",
+                     coverage_path = "/home/srg/Documents/git/LAD/src/results.txt",
+                     time_path     = "/home/srg/Documents/git/LAD/src/time.txt";
 
-        VectorGenerator generator(0.3);
-        auto v = generator(1000);
-        /*
-        v = {1, 0, 0, 0, 0,
-             0, 1, 0, 0, 0,
-             0, 0, 1, 0, 0,
-             0, 0, 0, 0, 1,
-             0, 0, 0, 1, 0};
-        */
-        Matrix mtr(50, 20, v);
+    GreedyModification solver(matrix_path);
+    // GreedySolver solver(matrix_path);
 
-        //boost::dynamic_bitset<uint8_t> cover (5, 5);
-        
-        std::cout << "Matrix:" << std::endl;
-        std::cout << mtr << std::endl;
+    auto start = high_resolution_clock::now();
+    dynamic_bitset<unsigned char> coverage = solver.solve();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
 
-        //std::cout << std::boolalpha << mtr.check_cols(cover) << std::endl;
-        mtr.mine_covers();
-        mtr.print_covers();
+    cout << "Coverage " << solver.coverage2String(coverage) << endl;
+    cout << "Working time " << duration.count() << " ms" << endl;
+    cout << "Max number of bins " << solver.maxBins(coverage) << endl;
 
-        return 0;
-    }
-    catch (char const* exc) {
-        std::cout << "Exception: " << exc << std::endl;
+    /* Write coverage to file */
+    ofstream coverage_file(coverage_path, ofstream::out);
+    coverage_file << solver.coverage2String(coverage) << endl;
+    coverage_file.close();
+
+    /* Save running time */
+    if (filesystem::exists(time_path)) {
+        ofstream time_file(time_path, ofstream::app);
+        time_file << ',' << duration.count();
+        time_file.close();
+    } else {
+        ofstream time_file(time_path, ofstream::out);
+        time_file << duration.count();
+        time_file.close();
     }
 }
