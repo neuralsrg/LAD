@@ -3,8 +3,9 @@
 #include <fstream>
 #include <filesystem>
 
-#include "GreedySolver.hpp"
-#include "GreedyModification.hpp"
+#include "Greedy.hpp"
+#include "ECGS.hpp"
+#include "RECGS.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -16,8 +17,9 @@ int main()
                      coverage_path = "/home/srg/Documents/git/LAD/src/results.txt",
                      time_path     = "/home/srg/Documents/git/LAD/src/time.txt";
 
-    GreedyModification solver(matrix_path);
-    // GreedySolver solver(matrix_path);
+    Greedy solver(matrix_path);
+    // RECGS solver(matrix_path);
+    // ECGS solver(matrix_path);
 
     auto start = high_resolution_clock::now();
     dynamic_bitset<unsigned char> coverage = solver.solve();
