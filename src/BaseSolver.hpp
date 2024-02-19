@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <set>
 #include <boost/dynamic_bitset.hpp>
 
 using namespace std;
@@ -27,6 +28,8 @@ protected:
     TMatrix mat;
     vector<int> header;
     bool checkCoverage(const dynamic_bitset<unsigned char>& coverage) const;
+    void reduceCoverage(dynamic_bitset<unsigned char>& coverage);
+    void addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsigned char>& coverage, set<int>& uncovered_rows, int newFeature);
 public:
     BaseSolver(string filename);
     virtual ~BaseSolver() {};

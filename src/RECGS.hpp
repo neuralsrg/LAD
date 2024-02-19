@@ -2,9 +2,9 @@
 #define GREEDY_MODIFICATION
 
 #include <map>
-#include "GreedySolver.hpp"
+#include "ECGS.hpp"
 
-class GreedyModification : public GreedySolver
+class RECGS : public ECGS
 {
 private:
     void print(string message, vector<size_t> nums) const;
@@ -20,8 +20,8 @@ protected:
     vector<size_t> getCoveringCols(const vector<size_t>& cols, const map<size_t, vector<size_t>>& supportRows) const;
 
 public:
-    GreedyModification(string filename);
-    virtual ~GreedyModification() {};
+    RECGS(string filename);
+    virtual ~RECGS() {};
     virtual dynamic_bitset<unsigned char> solve() override;
 };
 

@@ -56,6 +56,54 @@ bool BaseSolver::checkCoverage(const dynamic_bitset<unsigned char>& coverage) co
     return true;
 }
 
+void BaseSolver::reduceCoverage(dynamic_bitset<unsigned char>& coverage)
+{
+    vector<int> count_features(header.back() + 1, 0);
+    size_t j = coverage.find_first();
+    do {
+        count_features[header[j]]++;
+    }
+    while ((j = coverage.find_next(j)) != coverage.npos);
+
+    j = coverage.find_first();
+    do {
+        if (count_features[header[j]] <= 1) continue;
+        coverage.reset(j);
+        if (checkCoverage(coverage)) {
+            count_features[header[j]]--;
+        } else {
+            coverage.set(j);
+        }
+    }
+    while ((j = coverage.find_next(j)) != coverage.npos);
+}
+
+void BaseSolver::addColumn(vector<int>& covers_uncovered, dynamic_bitset<unsigned char>& coverage, set<int>& uncovered_rows, int newColumn)
+{
+    const auto& column = mat.col_mat[newColumn];
+    size_t coveredRow = column.find_first();
+    if (coveredRow == column.npos) throw("Empty column!");
+    do {
+        auto it = uncovered_rows.find(coveredRow);
+        if (it == uncovered_rows.end()) continue;
+        uncovered_rows.erase(it);
+        const auto& row = mat.row_mat[coveredRow];
+        size_t j = row.find_first();
+        if (j != row.npos) {
+            do {
+                if (covers_uncovered[j] > 0) {
+                    covers_uncovered[j]--;
+                } else if (covers_uncovered[j] < 0) {
+                    covers_uncovered[j]++;
+                } else throw("covers_uncovered[j] = 0");
+            }
+            while ((j = row.find_next(j)) != row.npos);
+        }
+    }
+    while ((coveredRow = column.find_next(coveredRow)) != column.npos);
+    coverage.set(newColumn);
+}
+
 /* Public members */
 
 void BaseSolver::printMatrix() const
