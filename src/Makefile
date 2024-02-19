@@ -1,16 +1,19 @@
 all: target.o
 
-target.o: main.o greedymodification.o greedysolver.o basesolver.o
-	g++ -std=c++17 -g -Wall -O3 main.o greedymodification.o greedysolver.o basesolver.o -o target.o
+target.o: main.o RECGS.o ECGS.o Greedy.o basesolver.o
+	g++ -std=c++17 -g -Wall -O3 main.o RECGS.o ECGS.o Greedy.o basesolver.o -o target.o
 
 main.o: main.cpp
 	g++ -std=c++17 -g -Wall -O3 -c main.cpp -o main.o
 
-greedymodification.o: greedysolver.o GreedyModification.hpp GreedyModification.cpp
-	g++ -std=c++17 -g -Wall -O3 -c GreedyModification.cpp -o greedymodification.o
+RECGS.o: ECGS.o RECGS.hpp RECGS.cpp
+	g++ -std=c++17 -g -Wall -O3 -c RECGS.cpp -o RECGS.o
 
-greedysolver.o: basesolver.o GreedySolver.hpp GreedySolver.cpp
-	g++ -std=c++17 -g -Wall -O3 -c GreedySolver.cpp -o greedysolver.o
+ECGS.o: basesolver.o ECGS.hpp ECGS.cpp
+	g++ -std=c++17 -g -Wall -O3 -c ECGS.cpp -o ECGS.o
+
+Greedy.o: basesolver.o Greedy.hpp Greedy.cpp
+	g++ -std=c++17 -g -Wall -O3 -c Greedy.cpp -o Greedy.o
 
 basesolver.o: BaseSolver.hpp BaseSolver.cpp
 	g++ -std=c++17 -g -Wall -O3 -c BaseSolver.cpp -o basesolver.o
