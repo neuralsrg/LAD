@@ -50,7 +50,7 @@ bool RECGS::gain(const vector<size_t>& exclude, size_t include, dynamic_bitset<u
 {
     if ((exclude.size() == 1) && (header[exclude[0]] == header[include])) return false;
     int i = header[include], e = header[exclude[0]];
-    if (intervals[e] > intervals[i] + 1) {
+    if (intervals[e] > intervals[i] + 1 && intervals[e] > exclude.size()) {
         // cout << "GAIN: intervals[e] = " << intervals[e] << "; intervals[i] = " << intervals[i] << endl;
         /* Update Intervals */
         intervals[e] -= exclude.size();
@@ -146,16 +146,18 @@ void RECGS::removeHeaviestCol(vector<size_t>& group, map<size_t, vector<size_t>>
 map<size_t, vector<size_t>> RECGS::getSupportRows(const dynamic_bitset<unsigned char>& coverage) const
 {
     map<size_t, vector<size_t>> dict;
+    size_t j = coverage.find_first();
+    do {
+        dict.insert({j, {}});
+        j = coverage.find_next(j);
+    } while (j != coverage.npos);
+
     for (size_t i = 0; i < mat.row_mat.size(); ++i) {
         if ((mat.row_mat[i] & coverage).count() != 1) {
             continue;
         }
         size_t j = (mat.row_mat[i] & coverage).find_first();
-        if (dict.find(j) == dict.end()) {
-            dict.insert({j, vector<size_t> {i}});
-        } else {
-            dict[j].push_back(i);
-        }
+        dict[j].push_back(i);
     }
     return dict;
 }
