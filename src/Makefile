@@ -1,10 +1,13 @@
 all: target.o
 
-target.o: main.o RECGS.o ECGS.o Greedy.o basesolver.o
-	g++ -std=c++17 -g -Wall -O3 main.o RECGS.o ECGS.o Greedy.o basesolver.o -o target.o
+target.o: main.o HEURISTIC.o RECGS.o ECGS.o Greedy.o basesolver.o
+	g++ -std=c++17 -g -Wall -O3 main.o HEURISTIC.o RECGS.o ECGS.o Greedy.o basesolver.o -o target.o
 
 main.o: main.cpp
 	g++ -std=c++17 -g -Wall -O3 -c main.cpp -o main.o
+
+HEURISTIC.o: RECGS.o HeuristicOpt.hpp HeuristicOpt.cpp
+	g++ -std=c++17 -g -Wall -O3 -c HeuristicOpt.cpp -o HEURISTIC.o
 
 RECGS.o: ECGS.o RECGS.hpp RECGS.cpp
 	g++ -std=c++17 -g -Wall -O3 -c RECGS.cpp -o RECGS.o
