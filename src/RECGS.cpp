@@ -9,16 +9,6 @@ void RECGS::print(string message, vector<size_t> nums) const
     cout << endl;
 }
 
-void RECGS::updateSupportRows(const vector<size_t>& exclude, size_t include, map<size_t, vector<size_t>>& supportRows) const
-{
-    supportRows.insert({include, vector<size_t>()});
-    for (const auto& v : exclude) {
-        supportRows[include].insert(supportRows[include].end(), supportRows[v].begin(), supportRows[v].end());
-        supportRows.erase(supportRows.find(v));
-    }
-    sort(supportRows[include].begin(), supportRows[include].end());
-}
-
 void RECGS::reduceCoverage(dynamic_bitset<unsigned char>& coverage, const size_t& include, map<size_t, vector<size_t>>& supportRows, map<int, size_t>& intervals) const
 {
     const dynamic_bitset<unsigned char>& includedCol = mat.col_mat[include];
@@ -45,6 +35,16 @@ void RECGS::reduceCoverage(dynamic_bitset<unsigned char>& coverage, const size_t
 }
 
 /* Protected members */
+
+void RECGS::updateSupportRows(const vector<size_t>& exclude, size_t include, map<size_t, vector<size_t>>& supportRows) const
+{
+    supportRows.insert({include, vector<size_t>()});
+    for (const auto& v : exclude) {
+        supportRows[include].insert(supportRows[include].end(), supportRows[v].begin(), supportRows[v].end());
+        supportRows.erase(supportRows.find(v));
+    }
+    sort(supportRows[include].begin(), supportRows[include].end());
+}
 
 bool RECGS::gain(const vector<size_t>& exclude, size_t include, dynamic_bitset<unsigned char>& coverage, map<int, size_t>& intervals, map<size_t, vector<size_t>>& supportRows) const
 {
