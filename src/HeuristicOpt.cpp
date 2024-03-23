@@ -61,7 +61,7 @@ dynamic_bitset<unsigned char> HeuristicOpt::solve()
         coverageCols.push_back(curCol);
         curCol = coverage.find_next(curCol);
     } while (curCol != coverage.npos);
-    cout << "Heuristic Before " << computeHeuristic(coverageCols) << endl;
+    // cout << "Heuristic Before " << computeHeuristic(coverageCols) << endl;
     auto sortingFn = [&](size_t i, size_t j)
     {
         return mat.col_mat[i].count() > mat.col_mat[j].count();
@@ -101,19 +101,19 @@ dynamic_bitset<unsigned char> HeuristicOpt::solve()
     }
 
     /* Append Columns */
-    vector<size_t> allCols(mat.col_mat.size());
-    iota(allCols.begin(), allCols.end(), 0);
-    sort(allCols.begin(), allCols.end(), inverseSortingFn);
-    for (const auto& col : allCols) {
-        if (coverage.test(col)) continue;
-        if (checkHeuristicGain(coverageCols, col)) {
-            coverage.set(col);
-            coverageCols.push_back(col);
-            // cout << "Appended column " << col << endl;
-            continue;
-        }
-        break;
-    }
-    cout << "Heuristic After " << computeHeuristic(coverageCols) << endl;
+    // vector<size_t> allCols(mat.col_mat.size());
+    // iota(allCols.begin(), allCols.end(), 0);
+    // sort(allCols.begin(), allCols.end(), inverseSortingFn);
+    // for (const auto& col : allCols) {
+    //     if (coverage.test(col)) continue;
+    //     if (checkHeuristicGain(coverageCols, col)) {
+    //         coverage.set(col);
+    //         coverageCols.push_back(col);
+    //         // cout << "Appended column " << col << endl;
+    //         continue;
+    //     }
+    //     break;
+    // }
+    // cout << "Heuristic After " << computeHeuristic(coverageCols) << endl;
     return coverage;
 }
